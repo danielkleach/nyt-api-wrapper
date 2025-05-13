@@ -1,61 +1,147 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NYT Best Sellers JSON API Wrapper
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 12 application that provides a clean, versioned, cache-aware, and testable JSON API wrapper around the New York Times Best Sellers History API.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
+- Versioned API endpoint: `/api/v1/best-sellers`
+- Query parameters: `author`, `title`, `isbn`, `offset`
+- Caches responses for 1 hour (supports Redis if `CACHE_STORE=redis`)
+- Graceful error handling
+- Fully tested (unit and feature)
+- **Swagger/OpenAPI documentation available**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Setup Instructions
 
-## Learning Laravel
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd nyt-api-wrapper
+   ```
+2. **Install dependencies:**
+   ```bash
+   composer install
+   ```
+3. **Copy and configure environment:**
+   ```bash
+   cp .env.example .env
+   # Add your NYT API key to .env
+   NYT_API_KEY=your_key_here
+   # To use Redis for caching, set:
+   CACHE_STORE=redis
+   # And ensure Redis is running (see below)
+   ```
+4. **Generate app key:**
+   ```bash
+   php artisan key:generate
+   ```
+5. **Run migrations (if needed):**
+   ```bash
+   php artisan migrate
+   ```
+6. **Start the server:**
+   ```bash
+   php artisan serve
+   ```
+7. **(Optional) Generate Swagger/OpenAPI docs:**
+   ```bash
+   php artisan l5-swagger:generate
+   ```
+   - View the Swagger UI at: [http://localhost:8000/api/documentation](http://localhost:8000/api/documentation)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Redis Note:**
+- If you set `CACHE_STORE=redis`, make sure you have Redis installed and running locally.
+- Default Redis settings are used (`127.0.0.1:6379`).
+- You can test Redis caching in Laravel with:
+  ```bash
+  php artisan tinker
+  >>> Cache::put('foo', 'bar', 600);
+  >>> Cache::get('foo');
+  // Should return 'bar'
+  ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Example Requests
 
-## Laravel Sponsors
+**GET /api/v1/best-sellers**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Query by author:
+```
+GET /api/v1/best-sellers?author=Diana%20Gabaldon
+```
+Query by title:
+```
+GET /api/v1/best-sellers?title=I%20Give%20You%20My%20Body
+```
+Query by ISBN:
+```
+GET /api/v1/best-sellers?isbn=9780399178573
+```
+Query with offset:
+```
+GET /api/v1/best-sellers?author=Diana%20Gabaldon&offset=20
+```
 
-### Premium Partners
+**Response:**
+```json
+{
+  "results": [
+    {
+      "title": "\"I GIVE YOU MY BODY ...\"",
+      "description": "The author of the Outlander novels gives tips on writing sex scenes, drawing on examples from the books.",
+      "contributor": "by Diana Gabaldon",
+      "author": "Diana Gabaldon",
+      "publisher": "Dell",
+      "isbns": [
+        {
+          "isbn10": "0399178570",
+          "isbn13": "9780399178573"
+        }
+      ],
+      "ranks_history": [
+        {
+          "primary_isbn10": "0399178570",
+          "primary_isbn13": "9780399178573",
+          "rank": 8,
+          "list_name": "Advice How-To and Miscellaneous",
+          "display_name": "Advice, How-To & Miscellaneous",
+          "published_date": "2016-09-04",
+          "bestsellers_date": "2016-08-20",
+          "weeks_on_list": 1,
+          "rank_last_week": 0
+        }
+      ]
+    }
+  ]
+}
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Running Tests
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan test
+```
 
-## Code of Conduct
+- Unit tests cover the NYT service (request, transformation, error handling)
+- Feature tests cover the API endpoint, validation, and error scenarios
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Decisions & Notes
+- API versioning is implemented via route prefix (`/api/v1`)
+- Service layer (`NYTService`) is separated for easy extension (future `/api/v2`)
+- Caching uses the full query string hash for cache keys
+- Error responses are structured and logged
+- All external HTTP calls are faked in tests
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT

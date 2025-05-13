@@ -1,0 +1,91 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "NYT Best Sellers API",
+        "description": "API wrapper for the New York Times Best Sellers History API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/best-sellers": {
+            "get": {
+                "tags": [
+                    "Best Sellers"
+                ],
+                "summary": "Get NYT best sellers history",
+                "description": "Handle the incoming request for best sellers.",
+                "operationId": "84ea75aefaebb5e3a4aa1ffe2c43d63d",
+                "parameters": [
+                    {
+                        "name": "author",
+                        "in": "query",
+                        "description": "Author name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Book title",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "isbn",
+                        "in": "query",
+                        "description": "Book ISBN",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Pagination offset",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "502": {
+                        "description": "NYT API error"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Best Sellers",
+            "description": "Best Sellers"
+        }
+    ]
+}
